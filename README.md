@@ -4,10 +4,17 @@ Quick hack to hide the full screen microphone dot on macOS 12.
 
 ## Usage
 
-```
+To build:
+
+```sh
 git clone https://github.com/s4y/undot
 cd undot
 make
+```
+
+To run:
+
+```sh
 while :; do ./undot; sleep 1; done
 ```
 
