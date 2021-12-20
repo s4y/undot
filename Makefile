@@ -1,0 +1,3 @@
+CFLAGS += -framework AppKit
+
+undot:
