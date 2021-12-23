@@ -9,7 +9,7 @@ To build:
 ```sh
 git clone https://github.com/s4y/undot
 cd undot
-make
+swiftc undot.swift
 ```
 
 To run:
