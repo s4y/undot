@@ -91,15 +91,17 @@ CF_IMPLICIT_BRIDGING_DISABLED
 @end
 
 int main() {
-  for (;;) {
-    __unused LaunchObserver *launchObserver = [LaunchObserver launchObserverFor:@"com.apple.controlcenter" block:^(NSRunningApplication *app){
-      if (observer)
-        CFRelease(observer);
+  if (!AXIsProcessTrustedWithOptions((CFDictionaryRef)@{
+    (NSString*)kAXTrustedCheckOptionPrompt: @YES,
+  }))
+    exit(0);
+  __unused LaunchObserver *launchObserver = [LaunchObserver launchObserverFor:@"com.apple.controlcenter" block:^(NSRunningApplication *app){
+    if (observer)
+      CFRelease(observer);
 
-      // This is the one little hack I'm leaving alone for right now: wait for Control Center to finish launching.
-      // I'm sure there's a good notification to wait for instead; poke me if you know.
-      sleep(1);
-
+    // This is the one little hack I'm leaving alone for right now: wait for Control Center to finish launching.
+    // I'm sure there's a good notification to wait for instead; poke me if you know.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
       AXObserverCreate(app.processIdentifier, handleNotification, &observer);
       AXUIElementRef controlCenter = AXUIElementCreateApplication(app.processIdentifier);
       AXObserverAddNotification(observer, controlCenter, kAXWindowCreatedNotification, NULL);
@@ -110,10 +112,8 @@ int main() {
       NSArray *windows = CFBridgingRelease(cfWindows);
       for (id window in windows)
         handleNewWindow((AXUIElementRef)window);
-    }];
+    });
+  }];
 
-    CFRunLoopRun();
-    break;
-  }
-
+  [NSApplication.sharedApplication run];
 }
