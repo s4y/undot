@@ -1,3 +1,3 @@
-CFLAGS += -framework AppKit
+CFLAGS += -framework AppKit -Os
 
 undot:
